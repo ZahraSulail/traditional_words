@@ -5,10 +5,11 @@ package com.barmeg.traditionalwords;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Build;
 
 import java.util.Locale;
 
-class LocaleHelper {
+class LocalHelper {
 
     public static Context setLocale(Context context, String language) {
         return updateResourcesLegacy(context, language);
@@ -23,7 +24,9 @@ class LocaleHelper {
 
         Configuration configuration = resources.getConfiguration();
         configuration.locale = locale;
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            configuration.setLayoutDirection(locale );
+        }
         resources.updateConfiguration(configuration, resources.getDisplayMetrics());
 
         return context;

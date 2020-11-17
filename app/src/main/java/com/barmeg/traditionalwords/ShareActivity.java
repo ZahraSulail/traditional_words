@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -12,10 +13,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Random;
 
 import androidx.annotation.Nullable;
@@ -52,8 +55,9 @@ public class ShareActivity extends AppCompatActivity {
         //Share prefrences code to share image and title
         SharedPreferences sharedPreferences = getSharedPreferences( SHARE_IMAGE, MODE_PRIVATE );
         String questionTitle = sharedPreferences.getString(SHARE_TITLE,  "");
-        mEditTextShareTitle.setText(questionTitle);
+        int questionImage = sharedPreferences.getInt( SHARE_IMAGE, 0 );
 
+        mEditTextShareTitle.setText(questionTitle);
         //GetIntent to get image id
         resourceId = getIntent().getIntExtra(SHARE_IMAGE, 0);
 
@@ -69,16 +73,20 @@ public class ShareActivity extends AppCompatActivity {
        shareIntent.setType( "text/plain");
        shareIntent.putExtra( Intent.EXTRA_TEXT, questionTitle );
        Resources resources = getApplicationContext().getResources();
-       Uri uri = Uri.parse( ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + resources.getResourcePackageName(resourceId) + '/' + resources.getResourceTypeName(resourceId) + '/' + resources.getResourceEntryName(resourceId) );
+       Uri uri = Uri.parse( ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + resources.getResourcePackageName(resourceId)
+               + '/' + resources.getResourceTypeName(resourceId) + '/' + resources.getResourceEntryName(resourceId) );
        shareIntent.setType("image/png");
        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
        startActivity(shareIntent);
 
        SharedPreferences sharedPreferences = getSharedPreferences( APP_PREF, MODE_PRIVATE );
        SharedPreferences.Editor editor = sharedPreferences.edit();
-       editor.putString("Share_title", questionTitle );
+       editor.putString(SHARE_TITLE, questionTitle );
+       editor.putInt( SHARE_IMAGE, resourceId );
        editor.apply();
     }
+
+
 }
 
 
